@@ -9,6 +9,7 @@ import { AppService } from "./app.service";
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { CommonModule } from './common/common.module';
+import { TestModule } from './test/test.module';
 import { User } from './user/entities/user.entity';
 import { VerificationCode } from './auth/entities/verification-code.entity';
 import { RefreshToken } from './auth/entities/refresh-token.entity';
@@ -61,6 +62,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
     AuthModule,
     UserModule,
     CommonModule,
+    TestModule,
   ],
   controllers: [AppController],
   providers: [
