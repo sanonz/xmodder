@@ -6,8 +6,11 @@ import {
   UpdateDateColumn,
   Index,
   Check,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { Role } from '../../auth/entities/role.entity';
 
 @Entity('users')
 @Check('email_or_phone_required', '(email IS NOT NULL) OR (phone IS NOT NULL)')
@@ -79,6 +82,14 @@ export class User {
     default: false,
   })
   phoneVerified: boolean;
+
+  @ManyToMany(() => Role, role => role.users)
+  @JoinTable({
+    name: 'user_roles',
+    joinColumn: { name: 'user_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'role_id', referencedColumnName: 'id' }
+  })
+  roles: Role[];
 
   @CreateDateColumn()
   createdAt: Date;

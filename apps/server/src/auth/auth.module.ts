@@ -7,14 +7,21 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { AuditLogController } from './controllers/audit-log.controller';
+import { RoleController } from './controllers/role.controller';
+import { UserRoleController } from './controllers/user-role.controller';
 import { UserModule } from '../user/user.module';
 import { VerificationCodeService } from './services/verification-code.service';
 import { RefreshTokenService } from './services/refresh-token.service';
+import { RoleService } from './services/role.service';
+import { AuditLogService } from './services/audit-log.service';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { VerificationCode } from './entities/verification-code.entity';
 import { RefreshToken } from './entities/refresh-token.entity';
 import { AuditLog } from './entities/audit-log.entity';
+import { Role } from './entities/role.entity';
+import { User } from '../user/entities/user.entity';
 import { CryptoService } from '../common/services/crypto.service';
 
 @Module({
@@ -32,7 +39,7 @@ import { CryptoService } from '../common/services/crypto.service';
         },
       }),
     }),
-    TypeOrmModule.forFeature([VerificationCode, RefreshToken, AuditLog]),
+    TypeOrmModule.forFeature([VerificationCode, RefreshToken, AuditLog, Role, User]),
     CacheModule.register({
       ttl: 300, // 5 minutes default TTL
       max: 10000, // maximum number of items in cache
@@ -48,15 +55,17 @@ import { CryptoService } from '../common/services/crypto.service';
       ],
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, AuditLogController, RoleController, UserRoleController],
   providers: [
     AuthService,
     VerificationCodeService,
     RefreshTokenService,
+    RoleService,
+    AuditLogService,
     LocalStrategy,
     JwtStrategy,
     CryptoService,
   ],
-  exports: [AuthService, JwtModule],
+  exports: [AuthService, RoleService, AuditLogService, JwtModule],
 })
 export class AuthModule {}

@@ -29,6 +29,7 @@ import {
 } from './dto/auth.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { CurrentUser } from './decorators/current-user.decorator';
+import { Public } from './decorators/public.decorator';
 import { User } from '../user/entities/user.entity';
 import { IResponseBody } from '../types/response';
 
@@ -43,6 +44,7 @@ export class AuthController {
 
   // ==================== 用户资源管理 ====================
 
+  @Public()
   @Post('users')
   @ApiOperation({ summary: 'Create a new user account' })
   @ApiResponse({
@@ -138,9 +140,10 @@ export class AuthController {
 
   // ==================== 认证会话管理 ====================
 
+    @Public()
   @Post('auth/sessions')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create authentication session (login)' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'User login' })
   @ApiResponse({
     status: 201,
     description: 'Authentication session created successfully',
@@ -176,6 +179,7 @@ export class AuthController {
     };
   }
 
+  @Public()
   @Put('auth/sessions')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Refresh authentication session' })
@@ -266,9 +270,10 @@ export class AuthController {
 
   // ==================== 验证码资源管理 ====================
 
+  @Public()
   @Post('verification-codes')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: 'Create verification code' })
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Send verification code' })
   @ApiResponse({
     status: 201,
     description: 'Verification code created and sent successfully',
@@ -322,6 +327,7 @@ export class AuthController {
     };
   }
 
+  @Public()
   @Post('password-reset')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Reset user password with verification code' })

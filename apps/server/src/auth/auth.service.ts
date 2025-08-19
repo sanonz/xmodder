@@ -7,6 +7,7 @@ import { User } from '../user/entities/user.entity';
 import { AuditLog, AuditEventType } from './entities/audit-log.entity';
 import { VerificationCodeService } from './services/verification-code.service';
 import { RefreshTokenService } from './services/refresh-token.service';
+import { RoleService } from './services/role.service';
 import { VerificationCodePurpose } from './entities/verification-code.entity';
 import { LoginDto, SendVerificationCodeDto, RefreshTokenDto, ChangePasswordDto, ResetPasswordDto } from './dto/auth.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
@@ -18,6 +19,7 @@ export interface JwtPayload {
   email?: string;
   phone?: string;
   username: string;
+  roles: string[];
   iat?: number;
   exp?: number;
 }
@@ -36,6 +38,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly verificationCodeService: VerificationCodeService,
     private readonly refreshTokenService: RefreshTokenService,
+    private readonly roleService: RoleService,
     private readonly cryptoService: CryptoService,
     @InjectRepository(AuditLog)
     private readonly auditLogRepository: Repository<AuditLog>,
@@ -184,12 +187,17 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
+    // 获取用户角色
+    const userRoles = await this.roleService.getUserRoleNames(user.id);
+    console.log('userRoles', userRoles)
+
     // 生成新的访问令牌
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email || undefined,
       phone: user.phone || undefined,
       username: user.username,
+      roles: userRoles,
     };
 
     const accessToken = this.jwtService.sign(payload);
@@ -320,11 +328,15 @@ export class AuthService {
    * 生成访问令牌和刷新令牌
    */
   private async generateTokens(user: User, request?: any, deviceId?: string): Promise<LoginResponse> {
+    // 获取用户角色
+    const userRoles = await this.roleService.getUserRoleNames(user.id);
+
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email || undefined,
       phone: user.phone || undefined,
       username: user.username,
+      roles: userRoles,
     };
 
     const accessToken = this.jwtService.sign(payload);

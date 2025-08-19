@@ -8,10 +8,14 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
+import { CommonModule } from './common/common.module';
 import { User } from './user/entities/user.entity';
 import { VerificationCode } from './auth/entities/verification-code.entity';
 import { RefreshToken } from './auth/entities/refresh-token.entity';
 import { AuditLog } from './auth/entities/audit-log.entity';
+import { Role } from './auth/entities/role.entity';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { RolesGuard } from './auth/guards/roles.guard';
 
 @Module({
   imports: [
@@ -29,7 +33,7 @@ import { AuditLog } from './auth/entities/audit-log.entity';
         username: configService.get<string>('DATABASE_USERNAME'),
         password: configService.get<string>('DATABASE_PASSWORD'),
         database: configService.get<string>('DATABASE_NAME'),
-        entities: [User, VerificationCode, RefreshToken, AuditLog],
+        entities: [User, VerificationCode, RefreshToken, AuditLog, Role],
         synchronize: configService.get<string>('APP_ENV') === 'development',
         logging: configService.get<string>('APP_ENV') === 'development',
       }),
@@ -56,6 +60,7 @@ import { AuditLog } from './auth/entities/audit-log.entity';
     }),
     AuthModule,
     UserModule,
+    CommonModule,
   ],
   controllers: [AppController],
   providers: [
@@ -63,6 +68,14 @@ import { AuditLog } from './auth/entities/audit-log.entity';
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
 })

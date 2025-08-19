@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 
 export enum AuditEventType {
+  // 认证相关事件
   LOGIN_SUCCESS = 'login_success',
   LOGIN_FAILED = 'login_failed',
   REGISTER_SUCCESS = 'register_success',
@@ -22,6 +23,16 @@ export enum AuditEventType {
   ACCOUNT_UNLOCKED = 'account_unlocked',
   REFRESH_TOKEN_USED = 'refresh_token_used',
   REFRESH_TOKEN_REVOKED = 'refresh_token_revoked',
+  
+  // 权限相关事件
+  ROLE_ASSIGNED = 'role_assigned',
+  ROLE_REMOVED = 'role_removed',
+  ROLE_CREATED = 'role_created',
+  ROLE_UPDATED = 'role_updated',
+  ROLE_DELETED = 'role_deleted',
+  PERMISSION_DENIED = 'permission_denied',
+  ACCESS_GRANTED = 'access_granted',
+  PRIVILEGE_ESCALATION_ATTEMPT = 'privilege_escalation_attempt',
 }
 
 @Entity('audit_logs')
