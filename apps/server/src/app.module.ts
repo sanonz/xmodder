@@ -36,6 +36,8 @@ import { RolesGuard } from './auth/guards/roles.guard';
         entities: [User, VerificationCode, RefreshToken, AuditLog, Role],
         synchronize: configService.get<string>('APP_ENV') === 'development',
         logging: configService.get<string>('APP_ENV') === 'development',
+        migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
+        migrationsRun: configService.get<string>('APP_ENV') === 'production',
       }),
     }),
     CacheModule.registerAsync({
