@@ -84,17 +84,10 @@ test/                   # E2E 测试
 src/**/*.spec.ts        # 单元测试
 ```
 
-## 重要文件清单
-
 ### 设计规范文档
-- `docs/RESTFUL_DESIGN.md` - 完整的 API 规范和设计原则
-- `docs/USER.md` - 完整用户认证体系规范和设计原则
-
-### 业务代码文件
-- `src/auth/auth.controller.ts` - RESTful 端点定义和响应格式化
-- `src/auth/auth.service.ts` - 核心认证逻辑和安全实现  
-- `src/user/entities/user.entity.ts` - 具有数据库约束的用户模型
-- `src/common/interceptors/response.interceptor.ts` - 响应标准化
+- `specs/restful-api/design.md` - 完整的 API 规范和设计原则
+- `specs/user/design.md` - 完整用户认证体系规范和设计原则
+- `specs/rbac-system/design.md` - 角色的访问控制 (RBAC) 规范和设计原则
 
 ### 开发环境配置文件
 - `docker-compose.yml` - 本地开发环境设置
