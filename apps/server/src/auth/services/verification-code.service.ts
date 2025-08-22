@@ -5,7 +5,7 @@ import type { Cache } from 'cache-manager';
 import { Inject } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { VerificationCode, VerificationCodePurpose } from '../entities/verification-code.entity';
-import { AuditLog, AuditEventType } from '../entities/audit-log.entity';
+import { AuditLog, AuditEventType } from '../../audit-log/audit-log.entity';
 import { CryptoService } from '../../common/services/crypto.service';
 import { ValidationUtils } from '../../common/utils/validation.utils';
 

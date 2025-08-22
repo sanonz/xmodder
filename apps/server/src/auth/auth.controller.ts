@@ -140,7 +140,7 @@ export class AuthController {
 
   // ==================== 认证会话管理 ====================
 
-    @Public()
+  @Public()
   @Post('auth/sessions')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'User login' })

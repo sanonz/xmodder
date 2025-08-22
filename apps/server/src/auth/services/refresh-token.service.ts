@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, LessThan, MoreThan } from 'typeorm';
 import { RefreshToken } from '../entities/refresh-token.entity';
-import { AuditLog, AuditEventType } from '../entities/audit-log.entity';
+import { AuditLog, AuditEventType } from '../../audit-log/audit-log.entity';
 import { CryptoService } from '../../common/services/crypto.service';
 import { ValidationUtils } from '../../common/utils/validation.utils';
 import { nanoid } from 'nanoid';

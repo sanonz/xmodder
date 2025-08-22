@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Request } from 'express';
-import { AuditLog, AuditEventType } from '../entities/audit-log.entity';
+import { AuditLog, AuditEventType } from './audit-log.entity';
 
 export interface AuditLogData {
   userId?: string;

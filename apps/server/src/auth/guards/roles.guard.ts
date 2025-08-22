@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY, ROLES_KEY } from '../decorators';
 import type { UserWithRoles } from '../strategies/jwt.strategy';
 import { InsufficientPermissionException, NoRolesAssignedException } from '../exceptions/permission.exceptions';
-import { AuditLogService } from '../services/audit-log.service';
+import { AuditLogService } from '../../audit-log/audit-log.service';
 import { Request } from 'express';
 
 /**

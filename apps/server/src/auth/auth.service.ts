@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserService } from '../user/user.service';
 import { User } from '../user/entities/user.entity';
-import { AuditLog, AuditEventType } from './entities/audit-log.entity';
+import { AuditLog, AuditEventType } from '../audit-log/audit-log.entity';
 import { VerificationCodeService } from './services/verification-code.service';
 import { RefreshTokenService } from './services/refresh-token.service';
 import { RoleService } from './services/role.service';

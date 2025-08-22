@@ -1,10 +1,10 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
-import { Roles } from '../decorators';
-import { SystemRole } from '../services/role.service';
-import { AuditLogService } from '../services/audit-log.service';
-import { AuditEventType } from '../entities/audit-log.entity';
-import type { IResponseBody } from '../../types/response';
+import { Roles } from '../auth/decorators';
+import { SystemRole } from '../auth/services/role.service';
+import { AuditLogService } from './audit-log.service';
+import { AuditEventType } from './audit-log.entity';
+import type { IResponseBody } from '../types/response';
 
 @ApiTags('Admin - Audit Logs')
 @Controller('admin/audit-logs')

@@ -12,7 +12,7 @@ import { CommonModule } from './common/common.module';
 import { User } from './user/entities/user.entity';
 import { VerificationCode } from './auth/entities/verification-code.entity';
 import { RefreshToken } from './auth/entities/refresh-token.entity';
-import { AuditLog } from './auth/entities/audit-log.entity';
+import { AuditLog } from './audit-log/audit-log.entity';
 import { Role } from './auth/entities/role.entity';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';

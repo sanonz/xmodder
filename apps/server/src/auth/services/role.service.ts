@@ -5,7 +5,7 @@ import { Request } from 'express';
 import { Role } from '../entities/role.entity';
 import { User } from '../../user/entities/user.entity';
 import { CreateRoleDto, UpdateRoleDto } from '../dto/role.dto';
-import { AuditLogService } from './audit-log.service';
+import { AuditLogService } from '../../audit-log/audit-log.service';
 
 export enum SystemRole {
   ADMIN = 'ADMIN',
