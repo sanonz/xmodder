@@ -49,6 +49,7 @@ async function bootstrap() {
     swaggerOptions: {
       persistAuthorization: true,
     },
+    jsonDocumentUrl: 'api/json',
   });
 
   const port = configService.get<number>('APP_PORT', 3000);
