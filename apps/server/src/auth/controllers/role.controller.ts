@@ -7,28 +7,40 @@ import {
   Body, 
   Param, 
   Req,
+  Query,
   HttpCode,
   HttpStatus
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { Roles } from '../decorators';
 import { SystemRole, RoleService } from '../services/role.service';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { CreateRoleDto, UpdateRoleDto } from '../dto/role.dto';
 import type { UserWithRoles } from '../strategies/jwt.strategy';
-import type { IResponseBody } from '../../types/response';
+import type { IResponseBody, IResponseWithPagination } from '../../types/response';
 import type { Role } from '../entities/role.entity';
+import { PaginationService } from '../../common/services/pagination.service';
+import { SortableQueryDto } from '../../common/dto/pagination.dto';
 
 @ApiTags('Admin - Role Management')
 @Controller('admin/roles')
 @Roles(SystemRole.ADMIN)
 @ApiBearerAuth()
 export class RoleController {
-  constructor(private readonly roleService: RoleService) {}
+  constructor(
+    private readonly roleService: RoleService,
+    private readonly paginationService: PaginationService,
+  ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all roles' })
+  @ApiOperation({ summary: 'Get all roles with pagination' })
+  @ApiQuery({ name: 'page', required: false, description: 'Page number', example: 1 })
+  @ApiQuery({ name: 'limit', required: false, description: 'Items per page', example: 10 })
+  @ApiQuery({ name: 'sortBy', required: false, description: 'Sort field', example: 'createdAt' })
+  @ApiQuery({ name: 'sortOrder', required: false, description: 'Sort order', enum: ['ASC', 'DESC'] })
+  @ApiQuery({ name: 'search', required: false, description: 'Search by name or description' })
+  @ApiQuery({ name: 'isActive', required: false, description: 'Filter by active status', type: Boolean })
   @ApiResponse({
     status: 200,
     description: 'Roles retrieved successfully',
@@ -44,16 +56,47 @@ export class RoleController {
             createdAt: '2024-01-01T00:00:00Z',
             updatedAt: '2024-01-01T00:00:00Z'
           }
-        ]
+        ],
+        pagination: {
+          page: 1,
+          limit: 10,
+          total: 5,
+          totalPages: 1
+        }
       }
     }
   })
-  async getAllRoles(): Promise<IResponseBody<Role[]>> {
-    const roles = await this.roleService.findAllRoles();
-    return {
-      success: true,
-      data: roles,
-    };
+  async getAllRoles(
+    @Query() queryDto: SortableQueryDto,
+    @Query('search') search?: string,
+    @Query('isActive') isActive?: string,
+  ): Promise<IResponseWithPagination<Role[]>> {
+    const options = this.paginationService.createOptionsFromDto(queryDto);
+
+    const result = await this.paginationService.paginate(
+      this.roleService.getRoleRepository(),
+      options,
+      (queryBuilder) => {
+        // 添加搜索条件
+        if (search) {
+          queryBuilder.where(
+            '(role.name LIKE :search OR role.description LIKE :search)',
+            { search: `%${search}%` }
+          );
+        }
+
+        // 添加状态筛选
+        if (isActive !== undefined) {
+          const activeStatus = isActive === 'true';
+          const whereClause = search ? 'andWhere' : 'where';
+          queryBuilder[whereClause]('role.isActive = :isActive', { isActive: activeStatus });
+        }
+
+        return queryBuilder;
+      }
+    );
+
+    return this.paginationService.buildPaginationResponse(result, '角色列表查询成功');
   }
 
   @Get('active')
@@ -149,7 +192,7 @@ export class RoleController {
     @Req() request: Request,
   ): Promise<IResponseBody<Role>> {
     const role = await this.roleService.createRole(createRoleDto);
-    
+
     // 记录审计日志
     const auditLogService = (this.roleService as any).auditLogService;
     if (auditLogService) {
@@ -187,7 +230,7 @@ export class RoleController {
     // 获取更新前的角色信息
     const oldRole = await this.roleService.findRoleById(id);
     const updatedRole = await this.roleService.updateRole(id, updateRoleDto);
-    
+
     // 记录审计日志
     const auditLogService = (this.roleService as any).auditLogService;
     if (auditLogService) {

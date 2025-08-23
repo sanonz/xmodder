@@ -198,7 +198,7 @@ export class RoleService {
     }
 
     const upperRoleNames = roleNames.map(name => name.toUpperCase());
-    
+
     // 防止移除用户的最后一个角色
     const remainingRoles = user.roles.filter(role => !upperRoleNames.includes(role.name));
     if (remainingRoles.length === 0) {
@@ -279,5 +279,12 @@ export class RoleService {
     }
 
     return statistics;
+  }
+
+  /**
+   * 获取角色仓库实例（用于分页服务）
+   */
+  getRoleRepository(): Repository<Role> {
+    return this.roleRepository;
   }
 }

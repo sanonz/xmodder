@@ -255,4 +255,11 @@ export class UserService {
   async verifyPhone(id: string): Promise<void> {
     await this.userRepository.update(id, { phoneVerified: true });
   }
+
+  /**
+   * 获取用户仓库实例（用于分页服务）
+   */
+  getUserRepository(): Repository<User> {
+    return this.userRepository;
+  }
 }

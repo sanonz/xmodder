@@ -86,6 +86,7 @@ src/**/*.spec.ts        # 单元测试
 
 ### 设计规范文档
 - `specs/restful-api/design.md` - 完整的 API 规范和设计原则
+- `specs/pagination/design.md` - 完整分页规范和设计原则
 - `specs/user/design.md` - 完整用户认证体系规范和设计原则
 - `specs/rbac-system/design.md` - 角色的访问控制 (RBAC) 规范和设计原则
 

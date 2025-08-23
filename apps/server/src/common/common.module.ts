@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { Role } from '../auth/entities/role.entity';
-import { User } from '../user/entities/user.entity';
+import { PaginationService } from './services/pagination.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Role, User])],
-  providers: [],
-  exports: [],
+  imports: [],
+  providers: [PaginationService],
+  exports: [PaginationService],
 })
 export class CommonModule {}

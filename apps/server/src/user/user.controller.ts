@@ -15,20 +15,30 @@ import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { User } from './entities/user.entity';
+import { Roles } from '../auth/decorators';
+import { SystemRole } from '../auth/services/role.service';
 import { IResponseBody, IResponseWithPagination } from '../types/response';
+import { PaginationService } from '../common/services/pagination.service';
+import { SortableQueryDto } from '../common/dto/pagination.dto';
 
 @ApiTags('Users')
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly paginationService: PaginationService,
+  ) {}
 
   @Get()
   @UseGuards(JwtAuthGuard)
+  @Roles(SystemRole.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get users list (admin only)' })
   @ApiQuery({ name: 'page', required: false, description: 'Page number', example: 1 })
   @ApiQuery({ name: 'limit', required: false, description: 'Items per page', example: 10 })
   @ApiQuery({ name: 'search', required: false, description: 'Search term' })
+  @ApiQuery({ name: 'sortBy', required: false, description: 'Sort field', example: 'createdAt' })
+  @ApiQuery({ name: 'sortOrder', required: false, description: 'Sort order', enum: ['ASC', 'DESC'] })
   @ApiResponse({
     status: 200,
     description: 'Users list retrieved successfully',
@@ -55,22 +65,43 @@ export class UserController {
     }
   })
   async getUsers(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
+    @Query() queryDto: SortableQueryDto,
     @Query('search') search?: string,
-  ): Promise<IResponseWithPagination<Omit<User, 'password'>[]>> {
-    // TODO: 实现用户列表查询，需要管理员权限检查
-    // 这里暂时返回空列表，实际实现需要分页和搜索功能
-    return {
-      success: true,
-      data: [],
-      pagination: {
-        page: Number(page),
-        limit: Number(limit),
-        total: 0,
-        totalPages: 0,
-      },
-    };
+  ): Promise<IResponseWithPagination<Partial<User>[]>> {
+    const options = this.paginationService.createOptionsFromDto(queryDto);
+
+    const result = await this.paginationService.paginate(
+      this.userService.getUserRepository(),
+      options,
+      (queryBuilder) => {
+        // 排除 password 字段
+        queryBuilder.select([
+          'user.id',
+          'user.email',
+          'user.phone',
+          'user.username',
+          'user.nickname',
+          'user.avatar',
+          'user.emailVerified',
+          'user.phoneVerified',
+          'user.isActive',
+          'user.createdAt',
+          'user.updatedAt',
+        ]);
+
+        // 添加搜索条件
+        if (search) {
+          queryBuilder.where(
+            '(user.email LIKE :search OR user.username LIKE :search OR user.nickname LIKE :search)',
+            { search: `%${search}%` }
+          );
+        }
+
+        return queryBuilder;
+      }
+    );
+
+    return this.paginationService.buildPaginationResponse(result, '用户列表查询成功');
   }
 
   @Get(':userId')
@@ -141,6 +172,7 @@ export class UserController {
 
   @Delete(':userId')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @Roles(SystemRole.ADMIN)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete specific user by ID (admin only)' })
@@ -155,6 +187,7 @@ export class UserController {
 
   @Patch(':userId/activate')
   @HttpCode(HttpStatus.OK)
+  @Roles(SystemRole.ADMIN)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Activate user account (admin only)' })
@@ -182,6 +215,7 @@ export class UserController {
 
   @Patch(':userId/deactivate')
   @HttpCode(HttpStatus.OK)
+  @Roles(SystemRole.ADMIN)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Deactivate user account (admin only)' })

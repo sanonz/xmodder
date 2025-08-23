@@ -11,6 +11,7 @@ import { AuditLogController } from '../audit-log/audit-log.controller';
 import { RoleController } from './controllers/role.controller';
 import { UserRoleController } from './controllers/user-role.controller';
 import { UserModule } from '../user/user.module';
+import { CommonModule } from '../common/common.module';
 import { VerificationCodeService } from './services/verification-code.service';
 import { RefreshTokenService } from './services/refresh-token.service';
 import { RoleService } from './services/role.service';
@@ -28,6 +29,7 @@ import { CryptoService } from '../common/services/crypto.service';
   imports: [
     ConfigModule,
     UserModule,
+    CommonModule,
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
